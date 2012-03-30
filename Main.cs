@@ -44,11 +44,11 @@ namespace Assembler
 			}
 			catch(ParserException e)
 			{
-				Console.Error.WriteLine(e.Message);
+				Console.Error.WriteLine(e.ToString());
 			}
 			catch(CompilerException e)
 			{
-				Console.Error.WriteLine(e.Message);
+				Console.Error.WriteLine(e.ToString());
 			}
 			catch(Exception e)
 			{
