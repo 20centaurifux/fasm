@@ -22,7 +22,7 @@ namespace Assembler.Compiler
 {
 	public class DelvecchioCompiler : ACompiler
 	{
-		public static Byte[] FORMAT_MAGIC = { 70, 79, 78, 90 };
+		public static Byte[] FORMAT_MAGIC = { 100, 101, 108, 50,  };
 		public static Int32 DATA_SEGMENT_SIZE = 512;
 
 		protected override Byte[] Compile(Int32[] dataSegment, Instruction[] codeSegment)
@@ -41,15 +41,13 @@ namespace Assembler.Compiler
 			// write magic:
 			writer.Write(FORMAT_MAGIC);
 
+			// write code segment length:
+			writer.Write(SerializeDWord(dataSegment.Length));
+
 			// write data segment:
 			for(i = 0; i < dataSegment.Length; ++i)
 			{
 				writer.Write(SerializeDWord(dataSegment[i]));
-			}
-
-			for(i = dataSegment.Length; i < DATA_SEGMENT_SIZE / 4; ++i)
-			{
-				writer.Write((Int32)0);
 			}
 
 			// write code segment:
