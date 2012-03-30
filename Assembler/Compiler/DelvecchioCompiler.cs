@@ -42,7 +42,7 @@ namespace Assembler.Compiler
 			writer.Write(FORMAT_MAGIC);
 
 			// write code segment length:
-			writer.Write(SerializeDWord(dataSegment.Length));
+			writer.Write(SerializeDWord(dataSegment.Length * 4));
 
 			// write data segment:
 			for(i = 0; i < dataSegment.Length; ++i)
