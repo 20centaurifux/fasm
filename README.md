@@ -86,3 +86,6 @@ Label names follow the same rules as variable names.
 
 ***fasm*** is written in *C#*. The easiest way to build the executable is to
 compile it with *MonoDevelop* or *Microsoft Visual Studio*.
+
+If you want to build ***fasm*** with the *Mono* compiler you can also use
+the *Makefile*.
