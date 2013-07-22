@@ -47,6 +47,9 @@ introduced by a semicolon.
 * add
 * mul
 * div
+* and
+* or
+* rnd
 * ret
 * cmp
 * je
