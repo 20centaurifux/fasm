@@ -24,13 +24,14 @@ namespace Assembler.Parser
 	{
 		private static Regex isNumberRegex = new Regex("^[0-9]+$");
 		private static Regex isAddressRegex = new Regex("^\\[[a-zA-Z_]+[a-zA-Z0-9_]*\\]$");
+		private static Regex extractAddressRegex = new Regex("^\\[(.*)\\]$");
 		private static Regex isVariableRegex = new Regex("^[a-zA-Z_]+[a-zA-Z0-9_]*$");
 		private static Regex isLabelRegex = isVariableRegex;
 		private static String[] registers = { "a0", "a1", "a2", "a3", "r", "ip", "sp", "fl" };
 		private static String[] writeProtectedRegisters = { "ip", "sp", "fl" };
 		private static String[] mnemonics = { "mov", "inc", "dec", "sub", "add", "mul", "div",
-		                                      "ret", "cmp", "je", "jne", "jge", "jg", "jle",
-		                                      "jl", "call", "ret"
+		                                      "and", "or", "mod", "ret", "cmp", "je", "jne", "jge",
+		                                      "jg", "jle", "jl", "call", "ret"
 		                                    };
 		private static String[] jumpMnemonics = { "je", "jne", "jge", "jg", "jle", "jl", "call" };
 		private static String[] separators = { "=", ",", ":" };
@@ -75,6 +76,18 @@ namespace Assembler.Parser
 		public static Boolean IsRegister(String text)
 		{
 			return registers.Contains(text);
+		}
+
+		public static Boolean IsAddressFromRegister(String text)
+		{
+			Match m = extractAddressRegex.Match(text);
+
+			if(m.Success)
+			{
+				return registers.Contains(m.Groups[1].ToString());
+			}
+
+			return false;
 		}
 
 		public static Boolean IsWriteProtectedRegister(String text)

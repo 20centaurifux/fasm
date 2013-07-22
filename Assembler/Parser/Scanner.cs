@@ -122,6 +122,10 @@ namespace Assembler.Parser
 			{
 				return new Token(EToken.Number, text);
 			}
+			else if(Validators.IsAddressFromRegister(text))
+			{
+				return new Token(EToken.AddressFromRegister, text);
+			}
 			else if(Validators.IsAddress(text))
 			{
 				return new Token(EToken.Address, text);

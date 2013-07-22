@@ -25,6 +25,7 @@ namespace Assembler.Parser
 		Register,
 		Number,
 		Address,
+		AddressFromRegister,
 		Text,
 		Linebreak
 	}

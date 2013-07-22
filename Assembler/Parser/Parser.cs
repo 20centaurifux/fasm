@@ -121,23 +121,23 @@ namespace Assembler.Parser
 		{
 			switch (token[0].Type)
 			{
-			case EToken.Section:
-				ProcessSection(token);
-				break;
+				case EToken.Section:
+					ProcessSection(token);
+					break;
 
-			case EToken.Text:
-				ProcessText(token);
-				break;
+				case EToken.Text:
+					ProcessText(token);
+					break;
 
-			case EToken.Mnemonic:
-				ProcessMnemonic(token);
-				break;
+				case EToken.Mnemonic:
+					ProcessMnemonic(token);
+					break;
 
-			case EToken.Comment:
-				break;
+				case EToken.Comment:
+					break;
 
-			default:
-				throw new UnexeptedTokenException(line, 1, token[0].Text);
+				default:
+					throw new UnexeptedTokenException(line, 1, token[0].Text);
 			}
 		}
 
@@ -258,9 +258,12 @@ namespace Assembler.Parser
 			{
 				ProcessIncDec(token);
 			}
-			else if(token[0].Text == "add" || token[0].Text == "sub" || token[0].Text == "mul" || token[0].Text == "div")
+			else if(token[0].Text == "add" || token[0].Text == "sub" ||
+			        token[0].Text == "mul" || token[0].Text == "div" ||
+			        token[0].Text == "and" || token[0].Text == "or" ||
+			        token[0].Text == "mod")
 			{
-				ProcessAddSubMulDiv(token);
+				ProcessAddSubMulDivAndOrMod(token);
 			}
 			else if(token[0].Text == "cmp")
 			{
@@ -340,6 +343,16 @@ namespace Assembler.Parser
 				instruction.AddParameter(new AddressParam(variableNames.IndexOf(token[1].Text.Substring(1, token[1].Text.Length - 2)) * 4, ESegment.Data));
 				instruction.AddParameter(new RegisterParam(registers[token[3].Text]));
 			}
+			else if(token[1].Type == EToken.Register && token[3].Type == EToken.AddressFromRegister)
+			{
+				string source = token[3].Text.Substring(1);
+	
+				source = source.Substring(0, source.Length - 1);
+
+				instruction = new Instruction(EOPCode.MOV_RegAddrInReg);
+				instruction.AddParameter(new RegisterParam(registers[token[1].Text]));
+				instruction.AddParameter(new RegisterParam(registers[source]));
+			}
 			else
 			{
 				throw new ParserException(line, "Invalid mov command.");
@@ -382,7 +395,7 @@ namespace Assembler.Parser
 			address += instruction.Size;
 		}
 
-		private void ProcessAddSubMulDiv(Token[] token)
+		private void ProcessAddSubMulDivAndOrMod(Token[] token)
 		{
 			Instruction instruction;
 			int offset = 0;
@@ -399,6 +412,18 @@ namespace Assembler.Parser
 			else if(token[0].Text == "div")
 			{
 				offset = 9;
+			}
+			else if(token[0].Text == "and")
+			{
+				offset = 12;
+			}
+			else if(token[0].Text == "or")
+			{
+				offset = 15;
+			}
+			else if(token[0].Text == "mod")
+			{
+				offset = 18;
 			}
 
 			if(token.Length < 4 || token.Length > 5)
