@@ -31,7 +31,7 @@ namespace Assembler.Parser
 		{
 			{ "inc", EOPCode.INC }, { "dec", EOPCode.DEC }, { "je", EOPCode.JE }, { "jne", EOPCode.JNE },
 			{ "jge", EOPCode.JGE }, { "jg", EOPCode.JG }, { "jle", EOPCode.JLE }, { "jl", EOPCode.JL },
-			{ "call", EOPCode.CALL }, { "ret", EOPCode.RET }
+			{ "call", EOPCode.CALL }, { "ret", EOPCode.RET }, { "rnd", EOPCode.RND }
 		};
 
 		private UInt32 line;
@@ -268,6 +268,10 @@ namespace Assembler.Parser
 			else if(token[0].Text == "cmp")
 			{
 				ProcessCmp(token);
+			}
+			else if(Validators.IsSingleMnemonic(token[0].Text))
+			{
+				ProcessSingleMnemonic(token);
 			}
 			else if(Validators.IsJumpMnemonic(token[0].Text))
 			{
@@ -578,6 +582,11 @@ namespace Assembler.Parser
 		private String GetVarFromAddress(String address)
 		{
 			return address.Substring(1, address.Length - 2);
+		}
+
+		private void ProcessSingleMnemonic (Token[] token)
+		{
+			instructions.Add(new Instruction(mnemonics[token[0].Text]));
 		}
 
 		private void ProcessSingleByteMnemonic(Token[] token)

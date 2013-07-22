@@ -29,11 +29,12 @@ namespace Assembler.Parser
 		private static Regex isLabelRegex = isVariableRegex;
 		private static String[] registers = { "a0", "a1", "a2", "a3", "r", "ip", "sp", "fl" };
 		private static String[] writeProtectedRegisters = { "ip", "sp", "fl" };
-		private static String[] mnemonics = { "mov", "inc", "dec", "sub", "add", "mul", "div",
+		private static String[] mnemonics = { "mov", "inc", "dec", "sub", "add", "mul", "div", "rnd",
 		                                      "and", "or", "mod", "ret", "cmp", "je", "jne", "jge",
 		                                      "jg", "jle", "jl", "call", "ret"
 		                                    };
 		private static String[] jumpMnemonics = { "je", "jne", "jge", "jg", "jle", "jl", "call" };
+		private static String[] singleMnemonics = { "rnd" };
 		private static String[] separators = { "=", ",", ":" };
 		private static String[] sections = { ".data", ".code" };
 
@@ -103,6 +104,11 @@ namespace Assembler.Parser
 		public static Boolean IsJumpMnemonic(String text)
 		{
 			return jumpMnemonics.Contains(text);
+		}
+
+		public static Boolean IsSingleMnemonic (String text)
+		{
+			return singleMnemonics.Contains(text);
 		}
 
 		public static Boolean IsSeparator(String text)

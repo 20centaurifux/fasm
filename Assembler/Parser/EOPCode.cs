@@ -47,15 +47,16 @@ namespace Assembler.Parser
 		MOD_RegReg = 26,
 		MOD_RegAddr = 27,
 		MOD_RegDWord = 28,
-		RET = 29,
-		CMP_RegAddr = 30,
-		CMP_RegReg = 31,
-		JE = 32,
-		JNE = 33,
-		JGE = 34,
-		JG = 35,
-		JLE = 36,
-		JL = 37,
-		CALL = 38
+		RND = 29,
+		RET = 30,
+		CMP_RegAddr = 31,
+		CMP_RegReg = 32,
+		JE = 33,
+		JNE = 34,
+		JGE = 35,
+		JG = 36,
+		JLE = 37,
+		JL = 38,
+		CALL = 39
 	}
 }
