@@ -14,8 +14,10 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
     General Public License v3 for more details.
  ***************************************************************************/
+using Gnu.Getopt;
 using System;
 using System.IO;
+using System.Text;
 using Assembler.Compiler;
 using Assembler.Parser;
 
@@ -23,24 +25,57 @@ namespace Assembler
 {
 	class Assembler
 	{
+		public const string APP_NAME     = "fasm";
+		public const long APP_MAJOR      = 0;
+		public const long APP_MINOR      = 2;
+		public const long APP_PATCHLEVEL = 0;
+
+		private const int OPTION_HELP    = 1;
+		private const int OPTION_VERSION = 2;
+		private const int OPTION_OUTPUT  = 4;
+		private const int OPTION_INPUT   = 8;
+
 		private Assembler() { }
 
-		static void Main(string[] args)
+		private class Options
 		{
+		    public bool Help { get; set; }
+		    public bool Version { get; set; }
+		    public string Output { get; set; }
+		    public string Input { get; set; }
+		    public string Data { get; set; }
+			public int Flags { get; set; }
+		}
+
+		static void Main (string[] args)
+		{
+			Options opts;
 			Assembler instance;
 			Byte[] bin;
 
-			if(args.Length != 2)
+			// parse options:
+			opts = GetOptions(args);
+
+			if(opts.Help)
 			{
-				Console.WriteLine("Wrong number of arguments.");
+			}
+			else if(opts.Version)
+			{
+				PrintVersionAndExit();
+			}
+
+			if((opts.Flags & OPTION_INPUT) == 0 || (opts.Flags & OPTION_OUTPUT) == 0)
+			{
+				Console.Error.WriteLine("Missing arguments. Type in ''{0} --help'' to show usage.", APP_NAME);
 				Environment.Exit(-1);
 			}
 
+			// compile program:
 			try
 			{
 				instance = new Assembler();
-				bin = instance.Compile(args[0]);
-				instance.Write(bin, args[1]);
+				bin = instance.Compile(opts.Input);
+				instance.Write(bin, opts.Output);
 			}
 			catch(ParserException e)
 			{
@@ -52,7 +87,7 @@ namespace Assembler
 			}
 			catch(Exception e)
 			{
-				Console.WriteLine(e.ToString());
+				Console.Error.WriteLine(e.ToString());
 			}
 		}
 
@@ -74,6 +109,75 @@ namespace Assembler
 				writer.Flush();
 				writer.Close ();
 			}
+		}
+
+		private static Getopt BuildOptionParser(string[] args)
+		{
+			LongOpt[] longopts = new LongOpt[4];
+
+			longopts[0] = new LongOpt("help", Argument.No, null, OPTION_HELP);
+			longopts[1] = new LongOpt("version", Argument.No, null, OPTION_VERSION);
+			longopts[2] = new LongOpt("out", Argument.Required, null, OPTION_OUTPUT); 
+			longopts[3] = new LongOpt("in", Argument.Required, null, OPTION_INPUT);
+
+			return new Getopt(APP_NAME, args, "vho:i:d:", longopts);
+		}
+
+		private static Options GetOptions(string[] args)
+		{
+			var g = BuildOptionParser(args);
+			int c;
+			var opts = new Options() { Help = false, Flags = 0 };
+
+			while((c = g.getopt()) != -1)
+			{
+				switch (c)
+				{
+					case OPTION_HELP:
+						case 'h':
+						opts.Help = true;
+						opts.Flags |= OPTION_HELP;
+						break;
+
+					case OPTION_VERSION:
+						case 'v':
+						opts.Version = true;
+						opts.Flags |= OPTION_VERSION;
+						break;
+
+					case OPTION_INPUT:
+						case 'i':
+						opts.Input = g.Optarg;
+						opts.Flags |= OPTION_INPUT;
+						break;
+
+					case OPTION_OUTPUT:
+						case 'o':
+						opts.Output = g.Optarg;
+						opts.Flags |= OPTION_OUTPUT;
+						break;
+				}
+			}
+
+			return opts;
+		}
+
+		private static void PrintUsageAndExit(int exitCode = 0)
+		{
+			Console.WriteLine(string.Format("Usage: {0} [OPTION]...", APP_NAME));
+			Console.WriteLine("-h, --help                 show this text and exit");
+			Console.WriteLine("-v, --version              show version and exit");
+			Console.WriteLine("-i, --in=FILENAME          source file to compile");
+			Console.WriteLine("-o, --out=FILENAME         name of the built assembly");
+			Console.WriteLine();
+
+			Environment.Exit(exitCode);
+		}
+
+		private static void PrintVersionAndExit()
+		{
+		    Console.WriteLine(string.Format("{0}, version {1}.{2}.{3}", APP_NAME, APP_MAJOR, APP_MINOR, APP_PATCHLEVEL));
+		    Environment.Exit(0);
 		}
 	}
 }
