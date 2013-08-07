@@ -25,7 +25,6 @@ using System;
 using System.Configuration;
 using System.Globalization;
 using System.Reflection;
-using System.Resources;
 using System.Text;
 
 namespace Gnu.Getopt
@@ -603,18 +602,6 @@ namespace Gnu.Getopt
 		/// necessary since .NET does not place the program name in args[0].
 		/// </summary>
 		private string progname;
-		
-		/// <summary>
-		/// The localized strings are kept in the resources, which can be
-		/// accessed by the <see cref="ResourceManager"/> class.
-		/// </summary>
-		private ResourceManager resManager = Properties.Resources.ResourceManager;
-		
-		/// <summary>
-		/// The current UI culture (set to en-US when posixly correctness is
-		/// enabled).
-		/// </summary>
-		private CultureInfo cultureInfo = CultureInfo.CurrentUICulture;
 
 		#endregion
 	
@@ -711,7 +698,6 @@ namespace Gnu.Getopt
 					"Gnu.PosixlyCorrect", typeof(bool))) 
 				{
 					this.posixlyCorrect = true;
-					this.cultureInfo = new CultureInfo("en-US");
 				}
 				else
 					this.posixlyCorrect = false;
@@ -964,11 +950,7 @@ namespace Gnu.Getopt
 			{
 				if (this.opterr)
 				{
-					object[] msgArgs = new object[]{
-						this.progname, this.argv[optind] };
-					System.Console.Error.WriteLine(
-						this.resManager.GetString("getoptAmbigious",
-						this.cultureInfo), msgArgs);
+					System.Console.Error.WriteLine("{0}: option ''{1}'' is ambiguous", new object[] { this.progname, this.argv[optind] });
 				}
 				
 				this.nextchar = "";
@@ -998,22 +980,12 @@ namespace Gnu.Getopt
 							// -- option
 							if (argv[this.optind - 1].StartsWith("--"))
 							{
-								object[] msgArgs = new object[]{
-									this.progname, pfound.Name };
-								System.Console.Error.WriteLine(
-									this.resManager.GetString(
-									"getoptArguments1", this.cultureInfo),
-									msgArgs);
+								System.Console.Error.WriteLine("{0}: option ''--{1}'' doesn't allow an argument", new object[] { this.progname, pfound.Name });
 							}
 							// +option or -option
 							else
 							{
-								object[] msgArgs = new object[]{ this.progname,
-									this.argv[optind - 1][0], pfound.Name};
-								System.Console.Error.WriteLine(
-									this.resManager.GetString(
-									"getoptArguments2", this.cultureInfo),
-									msgArgs);
+								System.Console.Error.WriteLine("{0}: option ''{1}{2}'' doesn't allow an argument", new object[] { this.progname, this.argv[optind - 1][0], pfound.Name }); 
 							}
 						}
 						
@@ -1034,11 +1006,7 @@ namespace Gnu.Getopt
 					{
 						if (this.opterr)
 						{
-							object[] msgArgs = new object[]{
-								this.progname, this.argv[this.optind - 1]};
-							System.Console.Error.WriteLine(
-								this.resManager.GetString("getoptRequires",
-								this.cultureInfo), msgArgs);
+                            System.Console.Error.WriteLine("{0}: option ''{1}'' requires an argument", new object[] { this.progname, this.argv[this.optind - 1] });
 						}
 						
 						this.nextchar = "";
@@ -1213,19 +1181,11 @@ namespace Gnu.Getopt
 					{
 						if (this.argv[this.optind].StartsWith("--"))
 						{
-							object[] msgArgs = new object[]{
-								this.progname, this.nextchar };
-							System.Console.Error.WriteLine(
-								this.resManager.GetString("getoptUnrecognized",
-								this.cultureInfo), msgArgs);
+							System.Console.Error.WriteLine("{0}: unrecognized option ''--{1}''",  new object[] { this.progname, this.nextchar });
 						}
 						else
 						{
-							object[] msgArgs = new object[]{ this.progname,
-								this.argv[optind][0], this.nextchar};
-							System.Console.Error.WriteLine(
-								this.resManager.GetString("getoptUnrecognized2",
-								this.cultureInfo), msgArgs);
+							System.Console.Error.WriteLine("{0}: unrecognized option ''{1}{2}''", new object[] { this.progname, this.argv[optind][0], this.nextchar });
 						}
 					}
 					
@@ -1259,19 +1219,11 @@ namespace Gnu.Getopt
 					if (this.posixlyCorrect)
 					{
 						// 1003.2 specifies the format of this message
-						object[] msgArgs = new object[]{
-							this.progname, (char) c2 };
-						System.Console.Error.WriteLine(
-							this.resManager.GetString("getoptIllegal",
-							this.cultureInfo), msgArgs);
+						System.Console.Error.WriteLine("{0}: illegal option -- {1}", new object[] { this.progname, (char) c2 });
 					}
 					else
 					{
-						object[] msgArgs = new object[]{
-							this.progname, (char) c2 };
-						System.Console.Error.WriteLine(
-							this.resManager.GetString("getoptInvalid",
-							this.cultureInfo), msgArgs);
+						System.Console.Error.WriteLine("{0}: invalid option -- {1}", new object[] { this.progname, (char) c2 });
 					}
 				}
 				
@@ -1294,11 +1246,7 @@ namespace Gnu.Getopt
 					if (this.opterr)
 					{
 						// 1003.2 specifies the format of this message. 
-						object[] msgArgs = new object[]{
-							this.progname, (char) c2 };
-						System.Console.Error.WriteLine(
-							this.resManager.GetString("getoptRequires2",
-							this.cultureInfo), msgArgs);
+						System.Console.Error.WriteLine("{0}: option requires an argument -- {1}", new object[] { this.progname, (char) c2 });
 					}
 					
 					this.optopt = c2;
@@ -1357,11 +1305,7 @@ namespace Gnu.Getopt
 						if (this.opterr)
 						{
 							// 1003.2 specifies the format of this message
-							object[] msgArgs = new object[]{
-								this.progname, (char) c2};
-							System.Console.Error.WriteLine(
-								this.resManager.GetString("getoptRequires2",
-								this.cultureInfo), msgArgs);
+							System.Console.Error.WriteLine("{0}: option ''{1}{2}'' doesn't allow an argument",  new object[] { this.progname, (char) c2 });
 						}
 						
 						this.optopt = c2;
@@ -1389,12 +1333,7 @@ namespace Gnu.Getopt
 								{
 									// 1003.2 specifies the format of this
 									// message
-									object[] msgArgs = new object[]{
-										this.progname, (char) c2};
-									System.Console.Error.WriteLine(
-										this.resManager.GetString(
-										"getoptRequires2", this.cultureInfo),
-										msgArgs);
+									System.Console.Error.WriteLine("{0}: option ''{1}{2}'' doesn't allow an argument", new object[] { this.progname, (char) c2 });
 								}
 								
 								this.optopt = c2;
