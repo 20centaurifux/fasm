@@ -85,6 +85,19 @@ This example shows how a complete source file can look like:
 Label names follow the same rules as variable names.
 
 
+## Compiling source files
+
+To compile a source file you have to specify two options: the source and the destination
+file:
+
+	fasm.exe --in=mysource.s --out=mybinary.bin
+
+
+It's also possible to use a separate file for the data segment:
+
+	fasm.exe --in=mysource.s --datafile=mydata.bin --out=mybinary.bin
+
+
 ## Building fasm
 
 ***fasm*** is written in *C#*. The easiest way to build the executable is to
