@@ -25,15 +25,16 @@ namespace Assembler
 {
 	class Assembler
 	{
-		public const string APP_NAME     = "fasm";
-		public const long APP_MAJOR      = 0;
-		public const long APP_MINOR      = 2;
-		public const long APP_PATCHLEVEL = 0;
+		public const string APP_NAME      = "fasm";
+		public const long APP_MAJOR       = 0;
+		public const long APP_MINOR       = 2;
+		public const long APP_PATCHLEVEL  = 0;
 
-		private const int OPTION_HELP    = 1;
-		private const int OPTION_VERSION = 2;
-		private const int OPTION_OUTPUT  = 4;
-		private const int OPTION_INPUT   = 8;
+		private const int OPTION_HELP     = 1;
+		private const int OPTION_VERSION  = 2;
+		private const int OPTION_OUTPUT   = 4;
+		private const int OPTION_INPUT    = 8;
+		private const int OPTION_DATAFILE = 16;
 
 		private Assembler() { }
 
@@ -43,7 +44,7 @@ namespace Assembler
 		    public bool Version { get; set; }
 		    public string Output { get; set; }
 		    public string Input { get; set; }
-		    public string Data { get; set; }
+		    public string DataFile { get; set; }
 			public int Flags { get; set; }
 		}
 
@@ -74,7 +75,7 @@ namespace Assembler
 			try
 			{
 				instance = new Assembler();
-				bin = instance.Compile(opts.Input);
+				bin = instance.Compile(opts.Input, opts.DataFile);
 				instance.Write(bin, opts.Output);
 			}
 			catch(ParserException e)
@@ -91,13 +92,14 @@ namespace Assembler
 			}
 		}
 
-		public Byte[] Compile(String filename)
+		public Byte[] Compile(String codeFile, String dataFile=null)
 		{
 			ACompiler compiler;
 
 			compiler = new DelvecchioCompiler();
 
-			return compiler.CompileFile(filename);
+			return dataFile == null ?
+				compiler.CompileFile(codeFile) : compiler.CompileAndMergeFiles(dataFile, codeFile);
 		}
 
 		public void Write(Byte[] bytes, String filename)
@@ -113,12 +115,13 @@ namespace Assembler
 
 		private static Getopt BuildOptionParser(string[] args)
 		{
-			LongOpt[] longopts = new LongOpt[4];
+			LongOpt[] longopts = new LongOpt[5];
 
 			longopts[0] = new LongOpt("help", Argument.No, null, OPTION_HELP);
 			longopts[1] = new LongOpt("version", Argument.No, null, OPTION_VERSION);
 			longopts[2] = new LongOpt("out", Argument.Required, null, OPTION_OUTPUT); 
 			longopts[3] = new LongOpt("in", Argument.Required, null, OPTION_INPUT);
+			longopts[4] = new LongOpt("datafile", Argument.Required, null, OPTION_DATAFILE);
 
 			return new Getopt(APP_NAME, args, "vho:i:d:", longopts);
 		}
@@ -155,6 +158,12 @@ namespace Assembler
 						case 'o':
 						opts.Output = g.Optarg;
 						opts.Flags |= OPTION_OUTPUT;
+						break;
+
+					case OPTION_DATAFILE:
+						case 'd':
+						opts.DataFile = g.Optarg;
+						opts.Flags |= OPTION_DATAFILE;
 						break;
 				}
 			}

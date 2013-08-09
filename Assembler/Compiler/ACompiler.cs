@@ -24,27 +24,67 @@ namespace Assembler.Compiler
 {
 	public abstract class ACompiler
 	{
-		protected abstract Byte[] Compile(Int32[] dateSegment, Instruction[] codeSegment);
+		protected abstract Byte[] Compile(Int32[] dataSegment, Instruction[] codeSegment);
 
-		public Byte[] Compile(String asm)
+		public Byte[] CompileFile(String filename)
 		{
-			Parser.Parser parser;
+			var asm = Encoding.ASCII.GetString(System.IO.File.ReadAllBytes(filename));
 
-			parser = new Parser.Parser();
-			parser.Parse (asm);
+			return CompileText(asm);
+		}
+
+		public Byte[] CompileAndMergeFiles(string dataFile, string codeFile)
+		{
+			var dataSegment = ReadDataSegmentFromFile(dataFile);
+			var asm = Encoding.ASCII.GetString(System.IO.File.ReadAllBytes(codeFile));
+
+			return CompileAndMerge(dataSegment, asm);
+		}
+
+		public Byte[] CompileText(String asm)
+		{
+			var parser = ParseASM(asm);
 
 			return Compile(parser.GetDataSegment(), parser.GetCodeSegment());
 		}
 
-		public Byte[] CompileFile(String filename)
+		public Byte[] CompileAndMerge(Int32[] dataSegment, String asm)
 		{
-			using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				Byte[] buffer = new Byte[stream.Length];
-				stream.Read(buffer, 0, (int)stream.Length);
+			var parser = new Parser.Parser();
+			parser.Parse(asm);
 
-				return Compile(Encoding.ASCII.GetString(buffer));
+			return Compile(dataSegment, parser.GetCodeSegment());
+		}
+
+		private Int32[] ReadDataSegmentFromFile (string filename)
+		{
+			var bytes = System.IO.File.ReadAllBytes (filename);
+			var dataSegment = new int[bytes.Length / 4];
+			var intBytes = new byte[4];
+			Int32 value;
+
+			for(int i = 0; i < dataSegment.Length; i++)
+			{
+				Array.Copy(bytes, i * 4, intBytes, 0, 4);
+
+				if(BitConverter.IsLittleEndian)
+				{
+					Array.Reverse(intBytes);
+				}
+
+				value = BitConverter.ToInt32(intBytes, 0);
+				dataSegment[i] = value;
 			}
+
+			return dataSegment;
+		}
+
+		private Parser.Parser ParseASM(string asm)
+		{
+			var parser = new Parser.Parser();
+			parser.Parse(asm);
+
+			return parser;
 		}
 	}
 }
