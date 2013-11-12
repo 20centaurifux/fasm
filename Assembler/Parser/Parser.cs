@@ -31,7 +31,8 @@ namespace Assembler.Parser
 		{
 			{ "inc", EOPCode.INC }, { "dec", EOPCode.DEC }, { "je", EOPCode.JE }, { "jne", EOPCode.JNE },
 			{ "jge", EOPCode.JGE }, { "jg", EOPCode.JG }, { "jle", EOPCode.JLE }, { "jl", EOPCode.JL },
-			{ "call", EOPCode.CALL }, { "ret", EOPCode.RET }, { "rnd", EOPCode.RND }
+			{ "call", EOPCode.CALL }, { "ret", EOPCode.RET }, { "rnd", EOPCode.RND },
+			{ "push", EOPCode.OP_CODE_PUSH }, { "pop", EOPCode.OP_CODE_POP }
 		};
 
 		private UInt32 line;
@@ -276,6 +277,10 @@ namespace Assembler.Parser
 			else if(Validators.IsJumpMnemonic(token[0].Text))
 			{
 				ProcessJump(token);
+			}
+			else if(Validators.IsStackMnemonic(token[0].Text))
+			{
+				ProcessPushPop(token);
 			}
 			else
 			{
@@ -577,6 +582,31 @@ namespace Assembler.Parser
 			instruction.AddParameter(new LabelParam(token[1].Text));
 			instructions.Add(instruction);
 			address += instruction.Size;
+		}
+
+		private void ProcessPushPop(Token[] token)
+		{
+			if(token.Length < 2 || token.Length > 3)
+			{
+				throw new ParserException(line, "Wrong number of arguments.");
+			}
+
+			if(token.Length == 3 && token[2].Type != EToken.Comment)
+			{
+				throw new UnexeptedTokenException(line, 3, token[2].Text);
+			}
+
+			if(token[1].Type == EToken.Register)
+			{
+				var instruction = new Instruction(mnemonics[token[0].Text]);
+				instruction.AddParameter(new RegisterParam(registers[token[1].Text]));
+				instructions.Add(instruction);
+				address += instruction.Size;
+			}
+			else
+			{
+				throw new UnexeptedTokenException(line, 2, token[2].Text);
+			}
 		}
 
 		private String GetVarFromAddress(String address)

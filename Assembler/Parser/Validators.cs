@@ -31,9 +31,9 @@ namespace Assembler.Parser
 		private static String[] writeProtectedRegisters = { "ip", "sp", "fl" };
 		private static String[] mnemonics = { "mov", "inc", "dec", "sub", "add", "mul", "div", "rnd",
 		                                      "and", "or", "mod", "ret", "cmp", "je", "jne", "jge",
-		                                      "jg", "jle", "jl", "call", "ret"
-		                                    };
+		                                      "jg", "jle", "jl", "call", "ret", "push", "pop" };
 		private static String[] jumpMnemonics = { "je", "jne", "jge", "jg", "jle", "jl", "call" };
+		private static String[] stackMnemonics = { "push", "pop" };
 		private static String[] singleMnemonics = { "rnd" };
 		private static String[] separators = { "=", ",", ":" };
 		private static String[] sections = { ".data", ".code" };
@@ -104,6 +104,11 @@ namespace Assembler.Parser
 		public static Boolean IsJumpMnemonic(String text)
 		{
 			return jumpMnemonics.Contains(text);
+		}
+
+		public static Boolean IsStackMnemonic(String text)
+		{
+			return stackMnemonics.Contains(text);
 		}
 
 		public static Boolean IsSingleMnemonic (String text)

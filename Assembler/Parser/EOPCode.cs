@@ -57,6 +57,8 @@ namespace Assembler.Parser
 		JG = 36,
 		JLE = 37,
 		JL = 38,
-		CALL = 39
+		CALL = 39,
+		OP_CODE_PUSH = 40,
+		OP_CODE_POP = 41
 	}
 }
