@@ -59,6 +59,7 @@ namespace Assembler
 
 			if(opts.Help)
 			{
+				PrintUsageAndExit(0);
 			}
 			else if(opts.Version)
 			{
