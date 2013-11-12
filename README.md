@@ -60,6 +60,8 @@ introduced by a semicolon.
 * jl
 * call
 * ret
+* pop
+* push
 
 You find a description of all available instructions in the ***Fonzie***
 documentation.
