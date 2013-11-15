@@ -27,6 +27,7 @@ namespace Assembler.Parser
 		Address,
 		AddressFromRegister,
 		Text,
+		StackAddress,
 		Linebreak
 	}
 }

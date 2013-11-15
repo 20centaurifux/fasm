@@ -255,6 +255,10 @@ namespace Assembler.Parser
 			{
 				ProcessMov(token);
 			}
+			else if(token[0].Text == "movs")
+			{
+				ProcessMovs(token);
+			}
 			else if(token[0].Text == "inc" || token[0].Text == "dec")
 			{
 				ProcessIncDec(token);
@@ -372,6 +376,41 @@ namespace Assembler.Parser
 				instructions.Add(instruction);
 				address += instruction.Size;
 			}
+		}
+
+		private void ProcessMovs(Token[] token)
+		{
+			Instruction instruction;
+
+			if(token.Length < 4 || token.Length > 5)
+			{
+				throw new ParserException(line, "Wrong number of arguments.");
+			}
+
+			if(token.Length == 5 && token[4].Type != EToken.Comment)
+			{
+				throw new UnexeptedTokenException(line, 5, token[4].Text);
+			}
+
+			if(token[1].Type == EToken.Register && token[3].Type == EToken.StackAddress)
+			{
+				instruction = new Instruction(EOPCode.MOVS_RegStack);
+				instruction.AddParameter(new RegisterParam(registers[token[1].Text]));
+				instruction.AddParameter(StackAddressParam.Parse(token[3].Text));
+			}
+			else if(token[1].Type == EToken.StackAddress && token[3].Type == EToken.Register)
+			{
+				instruction = new Instruction(EOPCode.MOVS_StackReg);
+				instruction.AddParameter(StackAddressParam.Parse(token[1].Text));
+				instruction.AddParameter(new RegisterParam(registers[token[3].Text]));
+			}
+			else
+			{
+				throw new ParserException(line, "Invalid movs statement.");
+			}
+
+			instructions.Add(instruction);
+			address += instruction.Size;
 		}
 
 		private void ProcessIncDec(Token[] token)

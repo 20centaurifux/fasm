@@ -78,6 +78,10 @@ namespace Assembler.Compiler
 					{
 						writer.Write((Byte)((RegisterParam)parameter).Register);
 					}
+					else if(parameter is StackAddressParam)
+					{
+						writer.Write(SerializeDWord(((StackAddressParam)parameter).Offset));
+					}
 					else
 					{
 						throw new CompilerException("Found invalid instruction parameter.");

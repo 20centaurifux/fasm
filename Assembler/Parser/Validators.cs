@@ -27,11 +27,12 @@ namespace Assembler.Parser
 		private static Regex extractAddressRegex = new Regex("^\\[(.*)\\]$");
 		private static Regex isVariableRegex = new Regex("^[a-zA-Z_]+[a-zA-Z0-9_]*$");
 		private static Regex isLabelRegex = isVariableRegex;
+		private static Regex isStackAddress = new Regex("^\\[sp\\-\\d+\\]$");
 		private static String[] registers = { "a0", "a1", "a2", "a3", "r", "ip", "sp", "fl" };
 		private static String[] writeProtectedRegisters = { "ip", "sp", "fl" };
 		private static String[] mnemonics = { "mov", "inc", "dec", "sub", "add", "mul", "div", "rnd",
 		                                      "and", "or", "mod", "ret", "cmp", "je", "jne", "jge",
-		                                      "jg", "jle", "jl", "call", "ret", "push", "pop" };
+		                                      "jg", "jle", "jl", "call", "ret", "push", "pop", "movs" };
 		private static String[] jumpMnemonics = { "je", "jne", "jge", "jg", "jle", "jl", "call" };
 		private static String[] stackMnemonics = { "push", "pop" };
 		private static String[] singleMnemonics = { "rnd" };
@@ -54,6 +55,11 @@ namespace Assembler.Parser
 			}
 
 			return false;
+		}
+
+		public static Boolean IsStackAddress(String text)
+		{
+			return isStackAddress.IsMatch(text);
 		}
 
 		public static Boolean IsVariable(String text)

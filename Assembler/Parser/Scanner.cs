@@ -130,6 +130,10 @@ namespace Assembler.Parser
 			{
 				return new Token(EToken.Address, text);
 			}
+			else if(Validators.IsStackAddress(text))
+			{
+				return new Token(EToken.StackAddress, text);
+			}
 			else
 			{
 				return new Token(EToken.Text, text);
