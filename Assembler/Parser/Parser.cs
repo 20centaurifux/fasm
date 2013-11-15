@@ -484,11 +484,6 @@ namespace Assembler.Parser
 				throw new UnexeptedTokenException(line, 2, token[1].Text);
 			}
 
-			if(Validators.IsWriteProtectedRegister(token[1].Text))
-			{
-				throw new ParserException(line, "Cannot access write protected register.");
-			}
-
 			if(token[2].Type != EToken.Separator && token[2].Text != ",")
 			{
 				throw new UnexeptedTokenException(line, 3, token[2].Text);
@@ -625,6 +620,8 @@ namespace Assembler.Parser
 
 		private void ProcessPushPop(Token[] token)
 		{
+			Instruction instruction;
+
 			if(token.Length < 2 || token.Length > 3)
 			{
 				throw new ParserException(line, "Wrong number of arguments.");
@@ -637,7 +634,7 @@ namespace Assembler.Parser
 
 			if(token[1].Type == EToken.Register)
 			{
-				var instruction = new Instruction(mnemonics[token[0].Text]);
+				instruction = new Instruction(mnemonics[token[0].Text]);
 				instruction.AddParameter(new RegisterParam(registers[token[1].Text]));
 				instructions.Add(instruction);
 				address += instruction.Size;

@@ -29,7 +29,7 @@ namespace Assembler.Parser
 		private static Regex isLabelRegex = isVariableRegex;
 		private static Regex isStackAddress = new Regex("^\\[sp\\-\\d+\\]$");
 		private static String[] registers = { "a0", "a1", "a2", "a3", "r", "ip", "sp", "fl" };
-		private static String[] writeProtectedRegisters = { "ip", "sp", "fl" };
+		private static String[] writeProtectedRegisters = { "ip", "fl" };
 		private static String[] mnemonics = { "mov", "inc", "dec", "sub", "add", "mul", "div", "rnd",
 		                                      "and", "or", "mod", "ret", "cmp", "je", "jne", "jge",
 		                                      "jg", "jle", "jl", "call", "ret", "push", "pop", "movs" };
@@ -100,6 +100,11 @@ namespace Assembler.Parser
 		public static Boolean IsWriteProtectedRegister(String text)
 		{
 			return writeProtectedRegisters.Contains(text);
+		}
+
+		public static Boolean IsStackPointer(String text)
+		{
+			return text == "sp";
 		}
 
 		public static Boolean IsMnemonic(String text)
