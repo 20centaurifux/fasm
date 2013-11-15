@@ -81,6 +81,7 @@ namespace Assembler
 			}
 			catch(ParserException e)
 			{
+				Console.WriteLine(String.Format("Error in line {0}", e.Line));
 				Console.Error.WriteLine(e.ToString());
 			}
 			catch(CompilerException e)
