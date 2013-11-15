@@ -62,6 +62,7 @@ introduced by a semicolon.
 * ret
 * pop
 * push
+* movs
 
 You find a description of all available instructions in the ***Fonzie***
 documentation.
